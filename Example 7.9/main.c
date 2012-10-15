@@ -9,6 +9,7 @@
 #define B1 BIT3
 
 #include "stdarg.h"
+#include <stdint.h>
 
 // Define flags used by the interrupt routines
 #define TX BIT0
@@ -20,9 +21,6 @@ void sendByte(unsigned char);
 void printf(char *, ...);
 
 void initUART(void);
-
-// Global to store how many times a button press has been detected
-int button_count = 0;
 
 void main(void) {
   WDTCTL = WDTPW | WDTHOLD;   // Stop watchdog timer
@@ -53,6 +51,9 @@ void main(void) {
 // ----------------------------------------------------------------------
 #pragma vector=PORT1_VECTOR
 __interrupt void PORT1_ISR(void) {
+  // Store how many times a button press has been detected
+  static uint8_t button_count = 0;
+
   P1OUT ^= LED1;              // Toggle LED
   button_count++;
 
