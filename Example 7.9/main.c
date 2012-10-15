@@ -1,5 +1,6 @@
-// example7.9.c
-// Responds to interrupts on input pin , LPM4 between interrupts
+// example 7.9
+// Responds to interrupts on input pin, LPM0 between interrupts
+// Outputs count of how many times a button press has been detected via printf through UART
 // Launchpad rev 1.5. MSP430G2553, LED1 active high on P1.0. B1 active low on P1.3
 #include <msp430g2553.h>
 
@@ -17,14 +18,15 @@ volatile unsigned char FLAGS = 0;
 
 void sendByte(unsigned char);
 void printf(char *, ...);
-void initTimer(void);
+
 void initUART(void);
 
+// Global to store how many times a button press has been detected
 int button_count = 0;
 
 void main(void) {
   WDTCTL = WDTPW | WDTHOLD;   // Stop watchdog timer
-  //initTimer();
+
   initUART();
 
   P1OUT = 0;                  // Preload LEDs off (active high!)
@@ -51,14 +53,15 @@ void main(void) {
 // ----------------------------------------------------------------------
 #pragma vector=PORT1_VECTOR
 __interrupt void PORT1_ISR(void) {
-  P1OUT ^= LED1;          // Toggle LED
+  P1OUT ^= LED1;              // Toggle LED
   button_count++;
+
+  // output button count through UART
   printf("Count: %i\r\n", button_count);
-  //P1IES ^= B1;            // Toggle edge sensitivity
 
   do {
-    P1IFG = 0;            // Clear any pending interrupts ...
-  } while (P1IFG != 0);   // ... until none remain
+    P1IFG = 0;                // Clear any pending interrupts ...
+  } while (P1IFG != 0);       // ... until none remain
 }
 
 
@@ -66,14 +69,14 @@ __interrupt void PORT1_ISR(void) {
 * Initializes the UART for 9600 baud with a RX interrupt
 **/
 void initUART(void) {
-  P1SEL |= BIT1 | BIT2 ;  // P1.1 = RXD, P1.2=TXD
-  P1SEL2 |= BIT1 | BIT2 ; // P1.1 = RXD, P1.2=TXD
+  P1SEL |= BIT1 | BIT2 ;      // P1.1 = RXD, P1.2=TXD
+  P1SEL2 |= BIT1 | BIT2 ;     // P1.1 = RXD, P1.2=TXD
 
-  UCA0CTL1 |= UCSSEL_1; // CLK = ACLK
-  UCA0BR0 = 0x03; // 32kHz/9600 = 3.41
+  UCA0CTL1 |= UCSSEL_1;       // CLK = ACLK
+  UCA0BR0 = 0x03;             // 32kHz/9600 = 3.41
   UCA0BR1 = 0x00;
   UCA0MCTL = UCBRS1 + UCBRS0; // Modulation UCBRSx = 3
-  UCA0CTL1 &= ~UCSWRST; // **Initialize USCI state machine**
+  UCA0CTL1 &= ~UCSWRST;       // **Initialize USCI state machine**
 }
 
 /**
