@@ -28,7 +28,6 @@ union {                             // Debounced state of P2IN
 #define RAWB1 BIT3                   //B1 on P1.3      P2IN_bit.P2IN_1
 #define DEBB1 DebP1IN.DebP1IN_bit.DebP1IN_0
 #define LED1  BIT0                   //LED1 on P1.0
-#define LED2  BIT6                   //LED2 on P1.6
 
 void main (void)
 {
