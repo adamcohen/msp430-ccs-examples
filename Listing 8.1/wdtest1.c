@@ -19,7 +19,7 @@
 void main(void) {
   WDTCTL = WDTPW | WDTCONFIG;                   // Configure and clear watchdog
   P1DIR |= LED1 | LED2;                         // Set pins with LEDs to output
-  P1OUT &= ~(LED1 | LED2);                      // LEDs off (active low)
+  P1OUT &= ~(LED1 | LED2);                      // LEDs off (active high)
 
   P1REN |= B1;
   P1OUT |= B1;
@@ -28,7 +28,7 @@ void main(void) {
     P1OUT &= ~LED2;                             //clear LED2 before setting it
     P1OUT |= LED2 & ((IFG1 & WDTIFG) << 6 );    // LED2 shows state of WDTIFG
 
-    if (P1IN & B1) {                            // Button up
+    if (P1IN & B1) {                            // Button up (active low)
       P1OUT &= ~LED1;                           // LED1 off
     } else {                                    // Button down
       WDTCTL = WDTPW | WDTCONFIG;               // Feed/pet/kick/clear watchdog
